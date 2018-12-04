@@ -1,0 +1,129 @@
+DEPTH=1024; 	% Memory depth and width are required 
+		% DEPTH is the number of addresses 
+WIDTH = 32; 	% WIDTH is the number of bits of data per word
+		% DEPTH and WIDTH should be entered as decimal numbers
+
+ADDRESS_RADIX = DEC; 	% Address and value radixes are required
+DATA_RADIX = HEX; 	% Enter BIN, DEC, HEX, OCT, or UNS; unless
+			% otherwise specified, radixes = HEX
+
+-- Specify values for addresses, which can be single address or range
+-- SOME THINGS TO CONSIDER
+-- 1) This memory is word-addressable, versus the MIPS conceptual byte-addressable memory.
+--    This means that address 1 corresponds to word 1, address 2 corresponds to word 2, etc.
+--    Since MIPS will be generating byte addresses, you will have to create some (very simple)
+--    logic in your VHDL wrapper to deal with byte/word offsets. 
+-- 2) The "single address" notation seems to be least likely to cause confusion so that is what
+--    I recommend. 
+-- 3) The values need to be in 32-bit hex form (i.e. don't use F when you really mean 0000000F).
+
+CONTENT
+BEGIN
+
+0:
+20080001 -- addi t0 zero 0x01		=> t0 = 1
+00084820 -- add t1 zero t0			=> t1 = 1		NOTE: WILL FORWARD FROM EX/MEM
+01205020 -- add t2  t1 zero			=> t2 = 1		NOTE: WILL FORWARD FROM EX/MEM
+00000000 -- noop					
+00000000 -- noop					
+20080004 -- addi t0 zero 0x04		=> t0 = 4		NOTE: WILL FORWARD FROM EX/MEM
+2009ffff -- addi t1 zero 0xffff		=> t1 = 0xffff  NOTE: WILL FORWARD FROM EX/MEM
+00085020 -- add t2 zero t0			=> t2 = 4		NOTE: WILL FORWARD FROM EX/MEM
+01205820 -- add t3 t1 zero			=> t3 = 0xffff	NOTE: WILL FORWARD FROM MEM/WB
+00000000 -- noop					
+00000000 -- noop					
+20080006 -- addi t0 zero 0x0006		=> t0 = 6
+20080005 -- addi t0 zero 0x0005		=> t0 = 5
+01084820 -- add t1 t0 t0			=> t1 = 0x000a  NOTE: WILL FORWARD FROM MEM/WB
+00000000 -- noop					
+00000000 -- noop					
+2008000a -- addi t0 zero 0x000a		=> t0 = 0x000a
+20000008 -- addi zero zero 0x0008	=> zero = 0x0000
+00004820 -- add t1 zero zero		=> t1 = 0x0000
+00085020 -- add t2 zero t0			=> t2 = 0x000a
+00000000 -- noop					
+00000000 -- noop					
+20080004 -- addi t0 zero 0x0004		=> t0 = 0x0004
+2009ff9c -- addi t1 zero 0xff9c		=> t1 = 0xff9c
+ad090000 -- sw t1 0x0000 t0			=> MEM[4] = 0xff9c
+00000000 -- noop					
+00000000 -- noop					
+20080008 -- addi t0 zero 0x0008		=> t0 = 0x0008
+8d090000 -- lw t1 0x0000 t0			=> t1 = 0x0001
+2008000c -- addi t0 zero 000c		=> t0 = 0x000c
+00000000 -- noop					
+8d0a0000 -- lw t2 0000 t0			=> t2 = 0x000c
+00000000 -- noop					
+00000000 -- noop					
+20080000 -- addi t0 zero 0x0000		=> t0 = 0x0000
+00000000 -- noop					
+00000000 -- noop					
+00000000 -- noop					
+20080023 -- addi t0 zero 0x0023		=> t0 = 0x0023
+00000000 -- noop					
+11000003 -- beq t0 zero 0x0003		=>
+00000000 -- noop					
+00000000 -- noop					
+00000000 -- noop					
+00000000 -- noop					
+00000000 -- noop					
+00000000 -- noop					
+08000034 -- j 0x00000034			=> 1st jump = noop = jump to line 76
+2009000a -- addi t1 zero 0x000a		=> t1 = 0x000a
+00000000 -- noop					
+00000000 -- noop					
+00000000 -- noop					
+00000000 -- noop					
+00000000 -- noop					
+10000004 -- beq zero zero 0x0004	=> 1st branch = noop = branch to line 28
+2008000c -- t0 zero 0x000c			=>
+00000000 -- noop					
+00000000 -- noop					
+00000000 -- noop					
+20080014 -- addi t0 zero 0x0014		=> t0 = 0x0014
+00000000 -- noop					=>
+00000000 -- noop					=>
+2008000b -- addi t0 zero 0x000b		=> t0 = 0x000b
+00000000 -- noop					=>
+00000000 -- noop					=>
+00000000 -- noop					=>
+11000004 -- beq t0 zero 0x0004		=>
+01084820 -- add t1 t0 t0			=>
+00000000 -- noop					=>
+00000000 -- noop					=>
+00000000 -- noop					=>
+00000000 -- noop					=>
+00000000 -- noop					=>
+00000000 -- noop					=>
+20080000 -- addi t0 zero 0x0000		=> t0 = 0x0000
+00000000 -- noop					=>
+00000000 -- noop					=>
+00000000 -- noop					=>
+20080028 -- addi t0 zero 0x0028		=> t0 = 0x0028
+11000003 -- beq t0 zero 0x0003		=>
+20090032 -- addi t1 zero 0x0032		=>
+00000000 -- noop					=>
+00000000 -- noop					=>
+00000000 -- noop					=>
+00000000 -- noop					=>
+00000000 -- noop					=>
+00004020 -- add t0 zero zero 		=>
+00000000 -- noop					=>
+00000000 -- noop					=>
+00000000 -- noop					=>
+8c080014 -- lw t0 0x0014 zero 		=>
+01084820 -- add t1 t0 t0 			=>
+00000000 -- noop					=>
+00000000 -- noop					=>
+00000000 -- noop					=>
+00004020 -- add t0 zero zero 		=>
+00000000 -- noop					=>
+00000000 -- noop					=>
+00000000 -- noop					=>
+8c080018 -- lw t0 0x0018 zero 		=>
+00000000 -- noop					=>
+01084820 -- add t1 t0 t0 			=> 
+00000000 -- noop					=>
+00000000 -- noop					=>
+00000000;
+END;
